@@ -7,18 +7,23 @@
     <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
     <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
     <style>
-        body {
+         body {
             overflow: hidden;
             margin: 0;
             padding: 0;
         }
-
+        #canvasContainer {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
         #renderCanvas {
             width: 100%;
             height: 100%;
             display: block;
         }
-
     </style>
 </head>
 <body>
@@ -90,33 +95,37 @@
             "[": "F6",
             "]": "G5",
             " ": "B5"
-
         };
         let scene;
         const canvas = document.getElementById("renderCanvas");
         const engine = new BABYLON.Engine(canvas, true);
 
-
         const createScene = async function (engine) {
-            scene = new BABYLON.Scene(engine);
-
             const alpha = 3 * Math.PI / 2;
             const beta = Math.PI / 50;
             const radius = 220;
             const target = new BABYLON.Vector3(0, 0, 0);
             const camera = new BABYLON.ArcRotateCamera("Camera", alpha, beta, radius, target, scene);
-            camera.attachControl(canvas, true);
-
-            const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
-            light.intensity = 0.6;
-
             const keyboard = new BABYLON.TransformNode("keyboard");
-
             const gui = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+            const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
+            const celesta = new BABYLON.TransformNode("celesta");
+            const pointerToKey = new Map();
+            const pressedKeys = {};
+            const isPlaying = {}; 
+            
+            let referencePositionX = -2.4 * 7;
+            let num = 0;
+            let text_note = 48;
+            let text = 0;
+            
+            scene = new BABYLON.Scene(engine);
+            camera.attachControl(canvas, true);
+            light.intensity = 0.6;
+            
             const buildKey = function (scene, parent, props, gui, text) {
                 if (props.type === "white") {
                     const bottom = BABYLON.MeshBuilder.CreateBox("whiteKeyBottom", { width: props.bottomWidth, height: 2, depth: 6.5 }, scene);
-
                     const top = BABYLON.MeshBuilder.CreateBox("whiteKeyTop", { width: props.topWidth, height: 2, depth: 6.5 }, scene);
                     top.position.z = 4.75;
                     top.position.x += props.topPositionX;
@@ -132,7 +141,6 @@
                     container.background = "transparent";
                     container.color = "rgba(0, 0, 0, 0)";
                     container.linkOffsetY = 15; 
-
 
                     const textBlock = new BABYLON.GUI.TextBlock();
                     textBlock.text = String.fromCharCode(text);
@@ -184,10 +192,6 @@
                 }
             };
 
-            let referencePositionX = -2.4 * 7;
-            let num = 0;
-            let text_note = 48;
-            let text = 0;
             for (let register = 3, register1 = 2; register <= 6; register++, register1++) {
                 num = 0;
                 keyParams.forEach(key => {
@@ -228,7 +232,6 @@
                 referencePositionX += 2.4 * 7;
             }
 
-            const celesta = new BABYLON.TransformNode("celesta");
             BABYLON.SceneLoader.ImportMesh("", "./models/", "Celesta.glb", scene, function (meshes) {
                 meshes.forEach(function (mesh) {
                     mesh.parent = celesta;
@@ -241,10 +244,6 @@
                 });
                 celesta.rotation.y = Math.PI / 2;
             });
-
-            const pointerToKey = new Map();
-            const pressedKeys = {};
-            const isPlaying = {}; 
 
             function keyDownHandler(event) {
                 const keyCode = event.key;
@@ -309,8 +308,6 @@
                 }
             }
 
-         
-
             scene.onPointerObservable.add((pointerInfo) => {
                 switch (pointerInfo.type) {
                     case BABYLON.PointerEventTypes.POINTERDOWN:
@@ -340,7 +337,6 @@
             });
 
             const xrHelper = await scene.createDefaultXRExperienceAsync();
-
             return scene;
         }
 
