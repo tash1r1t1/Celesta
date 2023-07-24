@@ -7,7 +7,7 @@
     <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
     <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
     <style>
-         body {
+        body {
             overflow: hidden;
             margin: 0;
             padding: 0;
@@ -19,6 +19,7 @@
             display: block;
         }
     </style>
+    <link rel="icon" type="image/png" href="/models/logo_celesta.png" sizes="16x16">
 </head>
 <body>
     <div id="UI"></div>
@@ -89,37 +90,31 @@
             "[": "F6",
             "]": "G5",
             " ": "B5"
+
         };
         let scene;
         const canvas = document.getElementById("renderCanvas");
         const engine = new BABYLON.Engine(canvas, true);
 
         const createScene = async function (engine) {
+            scene = new BABYLON.Scene(engine);
             const alpha = 3 * Math.PI / 2;
             const beta = Math.PI / 50;
             const radius = 220;
             const target = new BABYLON.Vector3(0, 0, 0);
             const camera = new BABYLON.ArcRotateCamera("Camera", alpha, beta, radius, target, scene);
-            const keyboard = new BABYLON.TransformNode("keyboard");
-            const gui = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-            const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
-            const celesta = new BABYLON.TransformNode("celesta");
-            const pointerToKey = new Map();
-            const pressedKeys = {};
-            const isPlaying = {}; 
-            
-            let referencePositionX = -2.4 * 7;
-            let num = 0;
-            let text_note = 48;
-            let text = 0;
-            
-            scene = new BABYLON.Scene(engine);
             camera.attachControl(canvas, true);
+
+            const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
             light.intensity = 0.6;
-            
+
+            const keyboard = new BABYLON.TransformNode("keyboard");
+
+            const gui = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
             const buildKey = function (scene, parent, props, gui, text) {
                 if (props.type === "white") {
                     const bottom = BABYLON.MeshBuilder.CreateBox("whiteKeyBottom", { width: props.bottomWidth, height: 2, depth: 6.5 }, scene);
+
                     const top = BABYLON.MeshBuilder.CreateBox("whiteKeyTop", { width: props.topWidth, height: 2, depth: 6.5 }, scene);
                     top.position.z = 4.75;
                     top.position.x += props.topPositionX;
@@ -139,7 +134,7 @@
                     const textBlock = new BABYLON.GUI.TextBlock();
                     textBlock.text = String.fromCharCode(text);
                     textBlock.color = (props.type === "black") ? "white" : "black";
-                    textBlock.fontSize = 22;
+                    textBlock.fontSize = 26;
                     textBlock.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
                     textBlock.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
 
@@ -172,7 +167,7 @@
                     const textBlock = new BABYLON.GUI.TextBlock();
                     textBlock.text = String.fromCharCode(text);
                     textBlock.color = (props.type === "black") ? "white" : "black";
-                    textBlock.fontSize = 22;
+                    textBlock.fontSize = 26;
                     textBlock.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
                     textBlock.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
 
@@ -186,6 +181,10 @@
                 }
             };
 
+            let referencePositionX = -2.4 * 7;
+            let num = 0;
+            let text_note = 48;
+            let text = 0;
             for (let register = 3, register1 = 2; register <= 6; register++, register1++) {
                 num = 0;
                 keyParams.forEach(key => {
@@ -226,7 +225,8 @@
                 referencePositionX += 2.4 * 7;
             }
 
-            BABYLON.SceneLoader.ImportMesh("", "./models/", "Celesta.glb", scene, function (meshes) {
+            const celesta = new BABYLON.TransformNode("celesta");
+            BABYLON.SceneLoader.ImportMesh("", "/static/models/", "Celesta.glb", scene, function (meshes) {
                 meshes.forEach(function (mesh) {
                     mesh.parent = celesta;
                     mesh.scaling = new BABYLON.Vector3(1.55, 1.55, 1.8);
@@ -238,6 +238,10 @@
                 });
                 celesta.rotation.y = Math.PI / 2;
             });
+
+            const pointerToKey = new Map();
+            const pressedKeys = {};
+            const isPlaying = {}; 
 
             function keyDownHandler(event) {
                 const keyCode = event.key;
@@ -279,7 +283,7 @@
                 if (!isPlaying[pianoKeyName]) {
                     const musicFileName = `${encodeURIComponent(pianoKeyName)}.wav`;
                     const audio = new Audio();
-                    audio.src = `./sound/${musicFileName}`;
+                    audio.src = `/static/sound/${musicFileName}`;
                     audio.play();
 
                     currentAudio = audio;
