@@ -227,16 +227,14 @@
 
             const celesta = new BABYLON.TransformNode("celesta");
             const randomParam = Math.random(); 
-            const modelUrl = `/models/Celesta.glb?v=${randomParam}`;
-            BABYLON.SceneLoader.ImportMesh("", modelUrl, scene, function (meshes) {
+            const modelUrl = `Celesta.glb?v=${randomParam}`; 
+            BABYLON.SceneLoader.ImportMesh("", "/models/", modelUrl, scene, function (meshes) {
                 meshes.forEach(function (mesh) {
                     mesh.parent = celesta;
                     mesh.scaling = new BABYLON.Vector3(1.55, 1.55, 1.8);
-
                     mesh.position.y = -48;
                     mesh.position.z = 106;
                     mesh.position.x = -80;
-
                 });
                 celesta.rotation.y = Math.PI / 2;
             });
