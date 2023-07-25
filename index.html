@@ -226,9 +226,7 @@
             }
 
             const celesta = new BABYLON.TransformNode("celesta");
-            const randomParam = Math.random(); 
-            const modelUrl = `Celesta.glb?v=${randomParam}`; 
-            BABYLON.SceneLoader.ImportMesh("", "/models/", modelUrl, scene, function (meshes) {
+            BABYLON.SceneLoader.ImportMesh("", "/models/", "Celesta.glb", scene, function (meshes) {
                 meshes.forEach(function (mesh) {
                     mesh.parent = celesta;
                     mesh.scaling = new BABYLON.Vector3(1.55, 1.55, 1.8);
@@ -281,10 +279,9 @@
 
             function playAudio(pianoKeyName) {
                 if (!isPlaying[pianoKeyName]) {
-                    const randomParam = Math.random(); 
                     const musicFileName = `${encodeURIComponent(pianoKeyName)}.wav`;
                     const audio = new Audio();
-                    audio.src = `/sound/${musicFileName}?v=${randomParam}`;
+                    audio.src = `/sound/${musicFileName}`;
                     audio.play();
 
                     currentAudio = audio;
