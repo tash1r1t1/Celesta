@@ -19,7 +19,7 @@
             display: block;
         }
     </style>
-    <link rel="icon" type="image/png" href="/models/logo_celesta.png" sizes="16x16">
+    <link rel="icon" type="image/png" href="models/logo_celesta.png" sizes="16x16">
 </head>
 <body>
     <div id="UI"></div>
@@ -226,7 +226,7 @@
             }
 
             const celesta = new BABYLON.TransformNode("celesta");
-            BABYLON.SceneLoader.ImportMesh("", "/models/", "Celesta.glb", scene, function (meshes) {
+            BABYLON.SceneLoader.ImportMesh("", "models/", "Celesta.glb", scene, function (meshes) {
                 meshes.forEach(function (mesh) {
                     mesh.parent = celesta;
                     mesh.scaling = new BABYLON.Vector3(1.55, 1.55, 1.8);
@@ -281,7 +281,7 @@
                 if (!isPlaying[pianoKeyName]) {
                     const musicFileName = `${encodeURIComponent(pianoKeyName)}.wav`;
                     const audio = new Audio();
-                    audio.src = `/sound/${musicFileName}`;
+                    audio.src = `sound/${musicFileName}`;
                     audio.play();
 
                     currentAudio = audio;
